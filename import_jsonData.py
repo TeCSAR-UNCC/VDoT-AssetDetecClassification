@@ -114,8 +114,8 @@ for asset in asset_names:
             for asset_feat in Asset_features:
                 if asset in asset_feat.keys():
                     asset_feats=asset_feat[asset]
-            print(asset_feats)
-            '''
+            #print(asset_feats)
+            
             for year in insp_data.keys():
                 #print(year)
                 #print(year_data[year])
@@ -127,15 +127,16 @@ for asset in asset_names:
                     AssetItemTag=asset_code
                     AssetID=asset_code.split('_')[0]
                     insp_rec= insp_data[year][asset_code] 
-                    file_headers=['AssetItemTag','SiteNumber','Route','MM','Direction','Type','AssetID','AssetItemName','Latitude','Longitude','Rate_1','Rate_2','Rate_3','Rate_4','Rate_5','Rate_6']+trf_heads+wea_heads+main_heads
+                    asset_features=asset_feats[asset_code]
+                    file_headers=['AssetItemTag','SiteNumber','Route','MM','Direction','Type','AssetID','AssetItemName','Latitude','Longitude','Dimension','Year','Rate_1','Rate_2','Rate_3','Rate_4','Rate_5','Rate_6','YearTraf']+trf_heads+wea_heads+main_heads
                     #print(file_headers)
-                    mydict={'SiteNumber':SiteNumber,'Route':route,'MM':mm,'Direction':Direction,'Type':Type,'AssetItemName':asset,'Latitude':lat,'Longitude':longt,
-                    **insp_rec,**traff_data_dict,**wea_data_dict,**main_data_dict}
+                    mydict={'AssetItemTag':AssetItemTag,'SiteNumber':SiteNumber,'Route':route,'MM':mm,'Direction':Direction,'Type':Type,'AssetID':AssetID,'AssetItemName':asset,**asset_features,'Year':year,
+                    **insp_rec,'YearTraf':YearTraf,**traff_data_dict,**wea_data_dict,**main_data_dict}
                     asset_df=asset_df.append(pd.DataFrame(mydict,index=[ind]))
                 
                     asset_df.to_csv('./ArcGIS_files/'+asset+'.csv', header=file_headers)
                     ind+=1
-                
+                '''
                 with open(asset+'.csv', 'w') as csv_file:  
                     writer = csv.writer(csv_file)
                     for key, value in mydict.items():
