@@ -4,7 +4,7 @@ import json
 import sys
 import pymongo
 
-my_client = pymongo.MongoClient('mongodb+srv://smohan7:Googlesux_2001@cluster0-gxh6r.mongodb.net/test?retryWrites=true&w=majority')
+my_client = pymongo.MongoClient('')
 my_database = my_client.test
 my_collection = my_database.vdot_pilot2
 
