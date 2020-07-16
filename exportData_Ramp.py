@@ -4,7 +4,7 @@ import json
 import sys
 import pymongo
 
-my_client = pymongo.MongoClient('')
+my_client = pymongo.MongoClient('mongodb+srv://smohan7:Googlesux_2001@cluster0-gxh6r.mongodb.net/test?retryWrites=true&w=majority')
 my_database = my_client.test
 my_collection = my_database.vdot_pilot2
 
@@ -60,14 +60,14 @@ yearTraf=df_trf_grp_final.iloc[0]['YearTraf']
 # mine inspection data
 df_insp = pd.read_csv("./Bristol_Ramp_Asset_TrafficTag.csv")
 
-df_insp_grp=df_wea_trf.groupby(['Direction'])
+df_insp_grp=df_insp.groupby(['Direction'])
 df_insp_grp_dir=df_insp_grp.get_group(Direction)
 df_insp_grp2=df_insp_grp_dir.groupby(['Type'])
 df_insp_grp_type=df_insp_grp2.get_group(Line)
 df_insp_grp3=df_insp_grp_type.groupby(['SiteNumber'])
 
 try:
-	df_trf_grp_final=df_trf_grp3.get_group(int(site_number))
+	df_insp_grp_final=df_insp_grp3.get_group(int(site_number))
 except:
 	print("Site number not found in the trf/wea file")
 	exit(0)
@@ -111,31 +111,19 @@ print(yearTraf)
 
 json_obj={'_id':KEY,'weather':wea_data_final,'traffic':[{str(yearTraf):trf_data_final}],'segment_features':seg_feat_final}
 
-my_collection.insert(json_obj)
+#my_collection.insert(json_obj)
 
-df_inspt = pd.read_csv("./Interstate Inventory_Bristol (2015-2019)_cleaned_OnlyMAINLINE.csv")
 
-df_inspt_grp=df_inspt.groupby(['Direction'])
-df_inspt_grp_dir=df_inspt_grp.get_group(Direction)
-df_inspt_grp2=df_inspt_grp_dir.groupby(['Type'])
-df_inspt_grp_type=df_inspt_grp2.get_group(Line)
-df_inspt_grp3=df_inspt_grp_type.groupby(['SiteNumber'])
-
-try:
-	df_inspt_grp_final=df_inspt_grp3.get_group(int(site_number))
-except:
-	print("Site number not found in the inspection file")
-	exit(0)
 
 asset_info=pd.read_excel("./AssetCode.xlsx")
 asset_info=asset_info[['CODE','MRP DESCRIPTION']]
 
 
-df_grouped_assets=df_inspt_grp_final.groupby(['AssetItemName'])
+df_grouped_assets=df_insp_grp_final.groupby(['AssetItemN'])
 asset_cnt=0
 
 import pickle
-fp='/home/shrey/vdot_db/seg.txt'
+fp='/home/shrey/vdot_db/implement/segment_dictionary_ramp_v2.txt'
 with open(fp, 'rb') as f:
     segmentDic = pickle.load(f)
 
@@ -172,7 +160,7 @@ for asset_rec in df_grouped_assets.groups.keys():
             #asset_feat=pd.DataFrame(asset_feat)
             #asset_feat.insert(0,'Asset_Type_Code',asset_type_code)
             assetFeat_data={'Latitude':row.Latitude,'Longitude':row.Longitude,'Dimension':row.Dimension}
-            assetInsp_data={'Rate_1':row.Rate_1,'Rate_2':row.Rate_2,'Rate_3':row.Rate_3,'Rate_4':row.Rate_4,'Rate_5':row.Rate_5,'Rate_6':row.Rate_6} 
+            assetInsp_data={'Rate_1':row.Rate_1,'Rate_2':row.Rate_2,'Rate_3':row.Rate_3,'Rate_4':row.Rate_4,'Rate_5':row.Rate_5,'Rate_6':row.Rate_6,'TrafTag':row.TrafTag} 
             #assetFeat_data=json.loads(asset_feat.reset_index().to_json(orient='index'))
             #assetInsp_data=json.loads(inspt_feat.reset_index().to_json(orient='index'))
             asset_feat_dict[asset_type_code]=assetFeat_data
@@ -180,7 +168,7 @@ for asset_rec in df_grouped_assets.groups.keys():
             asset_order+=1
         my_collection.update({'_id':KEY},{'$push':{'Asset_features':{asset_rec:asset_feat_dict}}})
         my_collection.update({'_id':KEY},{'$push':{asset_rec:{'Inspection':{'2016':asset_insp_dict},'Maintenance':maintenance_dict}}})
-        
+       
        
           
 
