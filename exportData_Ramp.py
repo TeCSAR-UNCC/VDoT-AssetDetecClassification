@@ -4,7 +4,7 @@ import json
 import sys
 import pymongo
 
-my_client = pymongo.MongoClient('')
+my_client = pymongo.MongoClient('mongodb+srv://smohan7:Googlesux_2001@cluster0-gxh6r.mongodb.net/test?retryWrites=true&w=majority')
 my_database = my_client.test
 my_collection = my_database.vdot_pilot2
 
@@ -111,7 +111,7 @@ print(yearTraf)
 
 json_obj={'_id':KEY,'weather':wea_data_final,'traffic':[{str(yearTraf):trf_data_final}],'segment_features':seg_feat_final}
 
-#my_collection.insert(json_obj)
+my_collection.insert(json_obj)
 
 
 
@@ -159,8 +159,8 @@ for asset_rec in df_grouped_assets.groups.keys():
             #asset_features=asset_feat.to_frame()
             #asset_feat=pd.DataFrame(asset_feat)
             #asset_feat.insert(0,'Asset_Type_Code',asset_type_code)
-            assetFeat_data={'Latitude':row.Latitude,'Longitude':row.Longitude,'Dimension':row.Dimension}
-            assetInsp_data={'Rate_1':row.Rate_1,'Rate_2':row.Rate_2,'Rate_3':row.Rate_3,'Rate_4':row.Rate_4,'Rate_5':row.Rate_5,'Rate_6':row.Rate_6,'TrafTag':row.TrafTag} 
+            assetFeat_data={'Latitude':row.Latitude,'Longitude':row.Longitude,'Dimension':row.Dimension,'TrafTag':row.TrafTag}
+            assetInsp_data={'Rate_1':row.Rate_1,'Rate_2':row.Rate_2,'Rate_3':row.Rate_3,'Rate_4':row.Rate_4,'Rate_5':row.Rate_5,'Rate_6':row.Rate_6} 
             #assetFeat_data=json.loads(asset_feat.reset_index().to_json(orient='index'))
             #assetInsp_data=json.loads(inspt_feat.reset_index().to_json(orient='index'))
             asset_feat_dict[asset_type_code]=assetFeat_data
